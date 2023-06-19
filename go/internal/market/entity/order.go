@@ -24,3 +24,7 @@ func NewOrder(orderID string, investor *Investor, asset *Asset, shares int, pric
 		Transactions: []*Transaction{},
 	}
 }
+
+func (o *Order) AddTransaction(transaction *Transaction) {
+	o.Transactions = append(o.Transactions, transaction)
+}

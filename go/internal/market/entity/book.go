@@ -31,42 +31,34 @@ func (b *Book) Trade() {
 	heap.Init(sellOrders)
 
 	for order := range b.OrdersChan {
+		var inputOrderQueue *OrderQueue
+		var outputOrderQueue *OrderQueue
+
 		if order.OrderType == "BUY" {
-			buyOrders.Push(order)
-			if sellOrders.Len() > 0 && sellOrders.Orders[0].Price <= order.Price {
-				sellOrder := sellOrders.Pop().(*Order)
-				if sellOrder.PendingShares > 0 {
-					transaction := NewTransaction(sellOrder, order, order.Shares, sellOrder.Price)
-					b.AddTransaction(transaction, b.Wg)
-
-					sellOrder.Transactions = append(sellOrder.Transactions, transaction)
-					order.Transactions = append(order.Transactions, transaction)
-
-					b.OrdersChanOut <- sellOrder
-					b.OrdersChanOut <- order
-
-					if sellOrder.PendingShares > 0 {
-						sellOrders.Push(sellOrder)
-					}
-				}
-			}
+			inputOrderQueue = buyOrders
+			outputOrderQueue = sellOrders
 		} else if order.OrderType == "SELL" {
-			sellOrders.Push(order)
-			if buyOrders.Len() > 0 && buyOrders.Orders[0].Price <= order.Price {
-				buyOrders := buyOrders.Pop().(*Order)
-				if buyOrders.PendingShares > 0 {
-					transaction := NewTransaction(buyOrders, order, order.Shares, buyOrders.Price)
-					b.AddTransaction(transaction, b.Wg)
+			inputOrderQueue = sellOrders
+			outputOrderQueue = buyOrders
+		}
 
-					buyOrders.Transactions = append(buyOrders.Transactions, transaction)
-					order.Transactions = append(order.Transactions, transaction)
+		inputOrderQueue.Push(order)
 
-					b.OrdersChanOut <- buyOrders
-					b.OrdersChanOut <- order
+		if outputOrderQueue.Len() > 0 && outputOrderQueue.Orders[0].Price <= order.Price {
+			lastOrder := outputOrderQueue.Pop().(*Order)
 
-					if buyOrders.PendingShares > 0 {
-						sellOrders.Push(buyOrders)
-					}
+			if lastOrder.PendingShares > 0 {
+				transaction := NewTransaction(lastOrder, order, order.Shares, lastOrder.Price)
+				b.AddTransaction(transaction, b.Wg)
+
+				lastOrder.AddTransaction(transaction)
+				order.AddTransaction(transaction)
+
+				b.OrdersChanOut <- lastOrder
+				b.OrdersChanOut <- order
+
+				if lastOrder.PendingShares > 0 {
+					outputOrderQueue.Push(lastOrder)
 				}
 			}
 		}
