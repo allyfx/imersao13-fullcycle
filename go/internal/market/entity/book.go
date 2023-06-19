@@ -88,7 +88,7 @@ func (b *Book) AddTransaction(transaction *Transaction, wg *sync.WaitGroup) {
 	transaction.AddSellOrderPendingShares(-minShares)
 
 	transaction.BuyingOrder.Investor.UpdateAssetPosition(transaction.BuyingOrder.Asset.ID, minShares)
-	transaction.AddSellOrderPendingShares(-minShares)
+	transaction.AddBuyOrderPendingShares(-minShares)
 
 	transaction.CalculateTotal(transaction.Shares, transaction.BuyingOrder.Price)
 	transaction.CloseOrders()
