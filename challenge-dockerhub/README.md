@@ -1,6 +1,6 @@
 ### Challenge 1: Full Cycle
 
-[Project Link](https://hub.docker.com/r/allyfx/fullcycle-challenge)
+[Project Link](https://hub.docker.com/r/allyfx/fullcycle)
 
-To install run:
-`docker pull allyfx/fullcycle-challenge`
+To install:
+`docker run allyfx/fullcycle`
