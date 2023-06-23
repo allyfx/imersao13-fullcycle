@@ -15,7 +15,6 @@ import (
 func main() {
 	ordersIn := make(chan *entity.Order)
 	ordersOut := make(chan *entity.Order)
-
 	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 
@@ -30,20 +29,19 @@ func main() {
 
 	go kafka.Consume(kafkaMsgChan) // T2
 
-	// Receive in kafka's channel, puts in input, process and returns in output, and then publishes to kafka
+	// recebe do canal do kafka, joga no input, processa joga no output e depois publica no kafka
 	book := entity.NewBook(ordersIn, ordersOut, wg)
 	go book.Trade() // T3
 
 	go func() {
 		for msg := range kafkaMsgChan {
 			wg.Add(1)
+			fmt.Println(string(msg.Value))
 			tradeInput := dto.TradeInput{}
 			err := json.Unmarshal(msg.Value, &tradeInput)
-
 			if err != nil {
 				panic(err)
 			}
-
 			order := transformer.TransformInput(tradeInput)
 			ordersIn <- order
 		}
@@ -51,7 +49,8 @@ func main() {
 
 	for res := range ordersOut {
 		output := transformer.TransformOutput(res)
-		outputJson, err := json.MarshalIndent(output, "", "   ")
+		outputJson, err := json.MarshalIndent(output, "", "  ")
+		fmt.Println(string(outputJson))
 		if err != nil {
 			fmt.Println(err)
 		}

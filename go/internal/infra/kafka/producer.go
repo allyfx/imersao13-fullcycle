@@ -28,6 +28,5 @@ func (p *Producer) Publish(msg interface{}, key []byte, topic string) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
