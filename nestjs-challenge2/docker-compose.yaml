@@ -8,9 +8,6 @@ services:
       - 5555:5555
     volumes:
       - .:/home/node/app
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
-      # não use docker desktop (linux) ou (windows)
   
   db:
     image: bitnami/mongodb:5.0.17
@@ -25,10 +22,6 @@ services:
 volumes:
   mongodb_data:
     driver: local
-
-networks:
-  my-network:
-    external: true
 # //Linux ou Mac
 # /etc/hosts
 
