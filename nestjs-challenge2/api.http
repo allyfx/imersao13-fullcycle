@@ -12,3 +12,14 @@ Content-Type: application/json
 
 ###
 GET http://localhost:3000/api/assets
+
+###
+GET http://localhost:3000/api/orders
+
+###
+POST http://localhost:3000/api/orders
+
+{
+  "asset_id": "asset2",
+  "price": 120,
+}
