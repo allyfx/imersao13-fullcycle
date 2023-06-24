@@ -13,7 +13,7 @@ export class OrdersService {
     return this.prismaService.order.create({
       data: {
         ...data,
-        status: 'open',
+        status: 'pending',
       },
     });
   }

@@ -3,8 +3,7 @@ Content-Type: application/json
 
 {
   "id": "asset2",
-  "symbol": "A1",
-  "price": 100 
+  "symbol": "A1"
 }
 
 ###
@@ -15,8 +14,9 @@ GET http://localhost:3000/api/orders
 
 ###
 POST http://localhost:3000/api/orders
+Content-Type: application/json
 
 {
   "asset_id": "asset2",
-  "price": 120,
+  "price": 120
 }
